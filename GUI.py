@@ -63,8 +63,7 @@ def save_file():
       initialdir='~',
       filetypes=filetypes
    )
-   #TODO: Figure out why it says it has two inputs
-   outputVariable.get(filename2)
+   outputVariable.set(filename2)
 
 # === Right frames ===
 # Add content to right frames
