@@ -1,3 +1,4 @@
+from textwrap import fill
 from tkinter import *
 from tkinter import filedialog as fd
 from tkinter.messagebox import showinfo
@@ -68,29 +69,44 @@ def save_file():
 # === Right frames ===
 # Add content to right frames
 # = Main frame =
-label1 = ctk.CTkLabel(startPage, text="Basic usage here")
+rightTitleFrame = ctk.CTkFrame(startPage)
+leftFrame = ctk.CTkFrame(startPage)
+rightFrame = ctk.CTkFrame(startPage)
+runFrame = ctk.CTkFrame(startPage)
+rightTitleFrame.pack(side=TOP, fill="both")
+runFrame.pack(side=BOTTOM, fill="both")
+leftFrame.pack(side=LEFT, expand=TRUE, fill="both")
+rightFrame.pack(side=RIGHT, expand=TRUE, fill="both")
+
+
+label1 = ctk.CTkLabel(rightTitleFrame, text="Basic usage here")
 label1.pack(pady=5)
 
 inputButton = ctk.CTkButton(
-   startPage,
+   leftFrame,
    text='Input file',
    command=select_file
 )
 
 outputButton = ctk.CTkButton(
-   startPage,
+   leftFrame,
    text='Output file',
    command=save_file
 )
 
-inputButton.pack(expand=True, side=LEFT)
-outputButton.pack(expand=True, side=RIGHT)
+inputButton.pack(side=TOP, pady=5)
+outputButton.pack(side=TOP, pady=5)
 
-inputEntry = ctk.CTkEntry(startPage, textvariable = inputVariable)
-inputEntry.pack(pady=5, side=LEFT)
+inputEntry = ctk.CTkEntry(rightFrame, textvariable = inputVariable)
+inputEntry.pack(pady=5, side=TOP)
 
-outputEntry = ctk.CTkEntry(startPage, textvariable= outputVariable)
-outputEntry.pack(pady=5, side=RIGHT)
+outputEntry = ctk.CTkEntry(rightFrame, textvariable= outputVariable)
+outputEntry.pack(pady=5, side=TOP)
+
+runButton = ctk.CTkButton(runFrame,
+                           text='RUN'
+                           )
+runButton.pack(pady=5, side=BOTTOM)
 
 #TODO Add language drop down menu - should these be checkboxes?
 #TODO Add RUN button
@@ -104,7 +120,7 @@ label2.pack(pady=20)
 
 # === Left frame ===
 leftTitel = ctk.CTkLabel(buttonFrame, text="OCRmyPDF")
-leftTitel.pack()
+leftTitel.pack(pady=5)
 # Add buttons to left frame tat switch between the two right frames
 btn1 = ctk.CTkButton(buttonFrame, text="OCRmyPDF", command=change_to_start)
 btn1.pack(side=TOP, pady=5)
