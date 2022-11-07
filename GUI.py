@@ -1,4 +1,3 @@
-from textwrap import fill
 from tkinter import *
 from tkinter import filedialog as fd
 from tkinter.messagebox import showinfo
@@ -66,6 +65,20 @@ def save_file():
    )
    outputVariable.set(filename2)
 
+def run_program():
+   # Set language param
+   if languageBox.get() == "Danish":
+      language = "dan"
+   elif languageBox.get() == "German":
+      language = "deu"
+   else:
+      language="eng"
+   
+   if __name__ == '__main__':  # To ensure correct behavior on Windows and macOS
+      pb.start()
+      ocrmypdf.ocr(input_file=inputVariable.get(), output_file=outputVariable.get(),language=language)
+      pb.stop()
+
 # === Right frames ===
 # Add content to right frames
 # = Main frame =
@@ -103,14 +116,30 @@ inputEntry.pack(pady=5, side=TOP)
 outputEntry = ctk.CTkEntry(rightFrame, textvariable= outputVariable)
 outputEntry.pack(pady=5, side=TOP)
 
+languageLabel = ctk.CTkLabel(leftFrame, text="Language")
+languageLabel.pack(pady=5, side=TOP)
+languageBox = ctk.CTkComboBox(master=rightFrame,
+                              values=["English", "Danish", "German", "French"])
+languageBox.pack(pady=5, side=TOP)
+
 runButton = ctk.CTkButton(runFrame,
-                           text='RUN'
+                           text='RUN',
+                           command=run_program
                            )
 runButton.pack(pady=5, side=BOTTOM)
 
-#TODO Add language drop down menu - should these be checkboxes?
-#TODO Add RUN button
-#TODO Send input and output to command line OCRmyPDF
+# TODO: Add progressbar for OCR progress
+# Progress bar is showing, but is not following the OCR progress
+pb = ctk.CTkProgressBar(
+   runFrame,
+   orient="horizontal",
+   mode="determinate"
+)
+pb.set(0)
+pb.pack(side=TOP)
+# TODO: Add more languages to the language picker
+# TODO: Add functionality for two languages - maybe advanced setting
+# TODO: Add funtionality to redo OCR
 
 
 # = Advanced settings =
