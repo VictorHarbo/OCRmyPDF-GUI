@@ -73,11 +73,13 @@ def run_program():
       language = "deu"
    else:
       language="eng"
-   
+
    if __name__ == '__main__':  # To ensure correct behavior on Windows and macOS
-      pb.start()
-      ocrmypdf.ocr(input_file=inputVariable.get(), output_file=outputVariable.get(),language=language)
-      pb.stop()
+      ocrmypdf.ocr(input_file=inputVariable.get(), 
+                     output_file=outputVariable.get(),
+                     language=language, 
+                     output_type= "pdf",
+                     force_ocr=TRUE)
 
 # === Right frames ===
 # Add content to right frames
@@ -143,13 +145,27 @@ pb.pack(side=TOP)
 
 
 # = Advanced settings =
-label2 = ctk.CTkLabel(advancedSettings, text="Advanced settings here")
-label2.pack(pady=20)
 #TODO: Advanced options - what should be included?
+advancedSettingsTitleFrame = ctk.CTkFrame(advancedSettings)
+leftFrameAdvancedSettings = ctk.CTkFrame(advancedSettings)
+rightFrameAdvancedSettings = ctk.CTkFrame(advancedSettings)
+runFrameAdvancedSetting = ctk.CTkFrame(advancedSettings)
+advancedSettingsTitleFrame.pack(side=TOP, fill="both")
+runFrameAdvancedSetting.pack(side=BOTTOM, fill="both")
+leftFrameAdvancedSettings.pack(side=LEFT, expand=TRUE, fill="both")
+rightFrameAdvancedSettings.pack(side=RIGHT, expand=TRUE, fill="both")
+
+label2 = ctk.CTkLabel(advancedSettingsTitleFrame, text="Advanced settings here")
+label2.pack(pady=20)
+
+multiLanguageCheck = ctk.CTkCheckBox(leftFrameAdvancedSettings, text= "Multiple languages")
+multiLanguageCheck.pack()
+
 
 # === Left frame ===
 leftTitel = ctk.CTkLabel(buttonFrame, text="OCRmyPDF")
 leftTitel.pack(pady=5)
+
 # Add buttons to left frame tat switch between the two right frames
 btn1 = ctk.CTkButton(buttonFrame, text="OCRmyPDF", command=change_to_start)
 btn1.pack(side=TOP, pady=5)
