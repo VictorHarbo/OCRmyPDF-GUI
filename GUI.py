@@ -75,32 +75,38 @@ def save_file():
 
 #TODO: If file already has an ocr layer - ask the user if they want to continue and then either set --force-ocr or quit process. 
 def run_program():
-   #TODO: Complete if else sequence with all languages available in GUI
    # Set language param
    if languageBox.get() == "Danish":
       language = "dan "
    elif languageBox.get() == "German":
       language = "deu "
+   elif languageBox.get() == "French":
+      language = "fre "
    else:
       language="eng "
    
-   #TODO: Complete if else sequence with all languages available in GUI
    # Set second language param if not none
    if secondLanguageBox.get() == "Danish":
       secondLanguage = "+ dan "
    elif secondLanguageBox.get() == "German":
       secondLanguage = "+ deu "
+   elif secondLanguageBox.get() == "English":
+      secondLanguage = "+ eng "
+   elif secondLanguageBox.get() == "French":
+      secondLanguage = "+ fre "
    else:
       secondLanguage = ""
 
+   # Check for forceToggle
+   if forceToggle.get() == 1:
+      forceOCR = "--force-ocr "
+   else:
+      forceOCR = ""
+
 
    if __name__ == '__main__':  # To ensure correct behavior on Windows and macOS
-      os.system("ocrmypdf " +"-l "+ language + secondLanguage + "--output-type pdf " + inputVariable.get() + " " + outputVariable.get())
-      #ocrmypdf.ocr(input_file=inputVariable.get(), 
-      #               output_file=outputVariable.get(),
-      #               language=language, 
-      #               output_type= "pdf",
-      #               force_ocr=TRUE)
+      os.system("ocrmypdf " +"-l "+ language + secondLanguage + "--output-type pdf " + forceOCR + inputVariable.get() + " " + outputVariable.get())
+
 
 # === Right frames ===
 # Add content to right frames
