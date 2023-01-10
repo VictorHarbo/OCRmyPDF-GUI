@@ -5,6 +5,7 @@ import tkinter.messagebox
 from tkinter.ttk import Style
 import customtkinter as ctk
 import ocrmypdf
+import os
 
 ctk.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
 ctk.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
@@ -75,11 +76,12 @@ def run_program():
       language="eng"
 
    if __name__ == '__main__':  # To ensure correct behavior on Windows and macOS
-      ocrmypdf.ocr(input_file=inputVariable.get(), 
-                     output_file=outputVariable.get(),
-                     language=language, 
-                     output_type= "pdf",
-                     force_ocr=TRUE)
+      os.system("ocrmypdf --force-ocr " + inputVariable.get() + " " + outputVariable.get())
+      #ocrmypdf.ocr(input_file=inputVariable.get(), 
+      #               output_file=outputVariable.get(),
+      #               language=language, 
+      #               output_type= "pdf",
+      #               force_ocr=TRUE)
 
 # === Right frames ===
 # Add content to right frames
