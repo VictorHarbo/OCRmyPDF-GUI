@@ -4,7 +4,6 @@ from tkinter.messagebox import showinfo
 import tkinter.messagebox
 from tkinter.ttk import Style
 import customtkinter as ctk
-import ocrmypdf
 import os
 
 ctk.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
@@ -28,16 +27,24 @@ buttonFrame.pack(side=LEFT, fill='both')
 # Create two frames to the right in the window
 startPage = ctk.CTkFrame(win)
 advancedSettings = ctk.CTkFrame(win)
+helpPage = ctk.CTkFrame(win)
 
 # === Functions ===
 # Define a function for switching the frames
 def change_to_start():
    startPage.pack(fill='both', expand=TRUE, side=RIGHT)
    advancedSettings.pack_forget()
+   helpPage.pack_forget()
 
 def change_to_advancedSettings():
    advancedSettings.pack(fill='both', expand=TRUE, side=RIGHT)
    startPage.pack_forget()
+   helpPage.pack_forget()
+
+def change_to_helppage():
+   helpPage.pack(fill='both', expand=TRUE, side=RIGHT)
+   startPage.pack_forget()
+   advancedSettings.pack_forget()
 
 def select_file():
    filetypes = (
@@ -47,7 +54,7 @@ def select_file():
 
    filename1 = fd.askopenfilename(
       title='Open a file',
-      initialdir='~',
+      initialdir='~/',
       filetypes=filetypes
    )
 
@@ -66,17 +73,29 @@ def save_file():
    )
    outputVariable.set(filename2)
 
+#TODO: If file already has an ocr layer - ask the user if they want to continue and then either set --force-ocr or quit process. 
 def run_program():
+   #TODO: Complete if else sequence with all languages available in GUI
    # Set language param
    if languageBox.get() == "Danish":
-      language = "dan"
+      language = "dan "
    elif languageBox.get() == "German":
-      language = "deu"
+      language = "deu "
    else:
-      language="eng"
+      language="eng "
+   
+   #TODO: Complete if else sequence with all languages available in GUI
+   # Set second language param if not none
+   if secondLanguageBox.get() == "Danish":
+      secondLanguage = "+ dan "
+   elif secondLanguageBox.get() == "German":
+      secondLanguage = "+ deu "
+   else:
+      secondLanguage = ""
+
 
    if __name__ == '__main__':  # To ensure correct behavior on Windows and macOS
-      os.system("ocrmypdf --force-ocr " + inputVariable.get() + " " + outputVariable.get())
+      os.system("ocrmypdf " +"-l "+ language + secondLanguage + "--output-type pdf " + inputVariable.get() + " " + outputVariable.get())
       #ocrmypdf.ocr(input_file=inputVariable.get(), 
       #               output_file=outputVariable.get(),
       #               language=language, 
@@ -126,25 +145,18 @@ languageBox = ctk.CTkComboBox(master=rightFrame,
                               values=["English", "Danish", "German", "French"])
 languageBox.pack(pady=5, side=TOP)
 
+forceToggle = ctk.CTkCheckBox(master=runFrame, 
+                              text="Force OCR")
+forceToggle.pack(pady=5, side=TOP)
+
 runButton = ctk.CTkButton(runFrame,
                            text='RUN',
                            command=run_program
                            )
 runButton.pack(pady=5, side=BOTTOM)
 
-# TODO: Add progressbar for OCR progress
-# Progress bar is showing, but is not following the OCR progress
-pb = ctk.CTkProgressBar(
-   runFrame,
-   orient="horizontal",
-   mode="determinate"
-)
-pb.set(0)
-pb.pack(side=TOP)
+# TODO: Add pop up message that says that the OCR process is finished
 # TODO: Add more languages to the language picker
-# TODO: Add functionality for two languages - maybe advanced setting
-# TODO: Add funtionality to redo OCR
-
 
 # = Advanced settings =
 #TODO: Advanced options - what should be included?
@@ -157,11 +169,17 @@ runFrameAdvancedSetting.pack(side=BOTTOM, fill="both")
 leftFrameAdvancedSettings.pack(side=LEFT, expand=TRUE, fill="both")
 rightFrameAdvancedSettings.pack(side=RIGHT, expand=TRUE, fill="both")
 
-label2 = ctk.CTkLabel(advancedSettingsTitleFrame, text="Advanced settings here")
-label2.pack(pady=20)
+advancedSettingsTitle = ctk.CTkLabel(advancedSettingsTitleFrame, text="Advanced settings")
+advancedSettingsTitle.pack(pady=20)
+multipleLanguagesLabel = ctk.CTkLabel(advancedSettingsTitleFrame, text = "Multiple languages can be selected here:")
+multipleLanguagesLabel.pack(pady=5)
 
-multiLanguageCheck = ctk.CTkCheckBox(leftFrameAdvancedSettings, text= "Multiple languages")
-multiLanguageCheck.pack()
+secondLanguageLabel = ctk.CTkLabel(leftFrameAdvancedSettings, text="Second OCR Language")
+secondLanguageLabel.pack(side=TOP, pady=5)
+
+secondLanguageBox = ctk.CTkComboBox(master=rightFrameAdvancedSettings,
+                              values=["none","English", "Danish", "German", "French"])
+secondLanguageBox.pack(pady=5, side=TOP)
 
 
 # === Left frame ===
@@ -173,7 +191,8 @@ btn1 = ctk.CTkButton(buttonFrame, text="OCRmyPDF", command=change_to_start)
 btn1.pack(side=TOP, pady=5)
 btn2 = ctk.CTkButton(buttonFrame, text="Advanced Settings", command=change_to_advancedSettings)
 btn2.pack(side=TOP, pady=5)
-# TODO: Add title label
+btn3 = ctk.CTkButton(buttonFrame, text="Help", command=change_to_helppage)
+btn3.pack(side=TOP, pady=5)
 
 startPage.pack(fill='both', expand=TRUE, side=RIGHT)
 win.mainloop()
