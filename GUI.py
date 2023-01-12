@@ -76,7 +76,6 @@ def save_file():
    )
    outputVariable.set(filename2)
 
-#TODO: If file already has an ocr layer - ask the user if they want to continue and then either set --force-ocr or quit process. 
 def run_program():
    # Set language param
    if languageBox.get() == "Danish":
