@@ -1,3 +1,5 @@
+import subprocess
+import time
 from tkinter import *
 from tkinter import filedialog as fd
 from tkinter.messagebox import showinfo
@@ -5,6 +7,7 @@ import tkinter.messagebox
 from tkinter.ttk import Style
 import customtkinter as ctk
 import os
+import ocrmypdf
 
 ctk.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
 ctk.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
@@ -102,11 +105,22 @@ def run_program():
       forceOCR = "--force-ocr "
    else:
       forceOCR = ""
-
+   
+   printStatus()
 
    if __name__ == '__main__':  # To ensure correct behavior on Windows and macOS
-      os.system("ocrmypdf " +"-l "+ language + secondLanguage + "--output-type pdf " + forceOCR + inputVariable.get() + " " + outputVariable.get())
+      cmd = "ocrmypdf " +"-l "+ language + secondLanguage + "--output-type pdf " + forceOCR + inputVariable.get() + " " + outputVariable.get()
+      subprocess.call(cmd, shell=True)
+      if subprocess.CalledProcessError:
+         runInfoLabel.configure(text="PDF file already has OCR. To rerun use 'Force OCR' setting.")
 
+def printStatus():
+   if inputVariable.get() == "" or outputVariable.get() == "":
+      runInfoLabel.configure(text="Please set input and output files.")
+   else:
+      runInfoLabel.configure(text="Please wait while your file is scanned...")
+   #except ocrmypdf.PriorOcrFoundError:
+   #   runInfoLabel.config(text="Chosen text already has OCR. Use Force OCR to scan anyway.")
 
 # === Right frames ===
 # Add content to right frames
@@ -119,7 +133,6 @@ rightTitleFrame.pack(side=TOP, fill="both")
 runFrame.pack(side=BOTTOM, fill="both")
 leftFrame.pack(side=LEFT, expand=TRUE, fill="both")
 rightFrame.pack(side=RIGHT, expand=TRUE, fill="both")
-
 
 label1 = ctk.CTkLabel(rightTitleFrame, text="Basic usage here")
 label1.pack(pady=5)
@@ -154,6 +167,10 @@ languageBox.pack(pady=5, side=TOP)
 forceToggle = ctk.CTkCheckBox(master=runFrame, 
                               text="Force OCR")
 forceToggle.pack(pady=5, side=TOP)
+
+runInfoLabel = ctk.CTkLabel(runFrame, text = "Ready to OCR scan your file!")
+runInfoLabel.pack(pady=5)
+
 
 runButton = ctk.CTkButton(runFrame,
                            text='RUN',
