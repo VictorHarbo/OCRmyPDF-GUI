@@ -24,3 +24,5 @@ exec $SHELL
 # Installing ocrmypdf
 echo "Installing OCRmyPDF"
 pip install ocrmypdf
+
+echo "OCRmyPDF has now been installed on your computer"
