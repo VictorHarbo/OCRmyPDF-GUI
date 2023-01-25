@@ -1,13 +1,7 @@
 import subprocess
-import time
+import customtkinter as ctk
 from tkinter import *
 from tkinter import filedialog as fd
-from tkinter.messagebox import showinfo
-import tkinter.messagebox
-from tkinter.ttk import Style
-import customtkinter as ctk
-import os
-import ocrmypdf
 
 ctk.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
 ctk.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
@@ -27,7 +21,7 @@ win.title("OCRmyPDF")
 buttonFrame = ctk.CTkFrame(win)
 buttonFrame.pack(side=LEFT, fill='both')
 
-# Create two frames to the right in the window
+# Create three frames to the right in the window
 startPage = ctk.CTkFrame(win)
 advancedSettings = ctk.CTkFrame(win)
 helpPage = ctk.CTkFrame(win)
@@ -76,7 +70,10 @@ def save_file():
    )
    outputVariable.set(filename2)
 
-def run_program():
+def preExecute():
+      runInfoLabel.configure(text="Your file is now getting OCR scanned. Please wait...")
+
+def execute():
    # Set language param
    if languageBox.get() == "Danish":
       language = "dan "
@@ -104,22 +101,43 @@ def run_program():
       forceOCR = "--force-ocr "
    else:
       forceOCR = ""
-   
-   printStatus()
 
    if __name__ == '__main__':  # To ensure correct behavior on Windows and macOS
       cmd = "ocrmypdf " +"-l "+ language + secondLanguage + "--output-type pdf " + forceOCR + inputVariable.get() + " " + outputVariable.get()
-      subprocess.call(cmd, shell=True)
-      if subprocess.CalledProcessError:
-         runInfoLabel.configure(text="PDF file already has OCR. To rerun use 'Force OCR' setting.")
+      p = subprocess.call(cmd, shell=True)
+      
+      # Error handling, copied from: https://ocrmypdf.readthedocs.io/en/v11.7.0/advanced.html#return-code-policy
+      if p == 1:
+         runInfoLabel.configure(text="Invalid arguments, exited with an error.")
+      elif p == 2:
+         runInfoLabel.configure(text="The input file does not seem to be a valid PDF")
+      elif p == 3:
+         runInfoLabel.configure(text="An external program required by OCRmyPDF is missing.")
+      elif p == 4:
+         runInfoLabel.configure(text="An output file was created, but it does not seem to be a valid PDF. The file will be available.")
+      elif p == 5:
+         runInfoLabel.configure(text="The user running OCRmyPDF does not have sufficient permissions to read the input file and write the output file.")
+      elif p == 6:
+         runInfoLabel.configure(text="The file already appears to contain text so it may not need OCR.\n Use Force OCR to scan anyways.")
+      elif p == 7:
+         runInfoLabel.configure(text="An error occurred in an external program (child process) and OCRmyPDF cannot continue.")
+      elif p == 8:
+         runInfoLabel.configure(text="The input PDF is encrypted. OCRmyPDF does not read encrypted PDFs.")
+      elif p == 9:
+         runInfoLabel.configure(text="A custom configuration file was forwarded to Tesseract using --tesseract-config,\nand Tesseract rejected this file.")
+      elif p == 10:
+         runInfoLabel.configure(text="A valid PDF was created, PDF/A conversion failed. \nThe file will be available.")
+      elif p == 15:
+         runInfoLabel.configure(text="An unknown error occurred.")
+      elif p == 130:
+         runInfoLabel.configure(text="The program was interrupted by pressing Ctrl+C.")
+      else: 
+         runInfoLabel.configure(text="Your file has been OCR scanned.")
 
-def printStatus():
-   if inputVariable.get() == "" or outputVariable.get() == "":
-      runInfoLabel.configure(text="Please set input and output files.")
-   else:
-      runInfoLabel.configure(text="Please wait while your file is scanned...")
-   #except ocrmypdf.PriorOcrFoundError:
-   #   runInfoLabel.config(text="Chosen text already has OCR. Use Force OCR to scan anyway.")
+
+def run_program():
+   preExecute()
+   execute()
 
 # === Right frames ===
 # Add content to right frames
@@ -167,18 +185,17 @@ forceToggle = ctk.CTkCheckBox(master=runFrame,
                               text="Force OCR")
 forceToggle.pack(pady=5, side=TOP)
 
-runInfoLabel = ctk.CTkLabel(runFrame, text = "Ready to OCR scan your file!")
-runInfoLabel.pack(pady=5)
-
-
 runButton = ctk.CTkButton(runFrame,
                            text='RUN',
                            command=run_program
                            )
 runButton.pack(pady=5, side=BOTTOM)
 
-# TODO: Add pop up message that says that the OCR process is finished
+runInfoLabel = ctk.CTkLabel(runFrame, text = "Ready to OCR scan your file!")
+runInfoLabel.pack(pady=5)
+
 # TODO: Add more languages to the language picker
+# TODO: Write bash (or python scripts for installation of prerequisits on mac and windows)
 
 # = Advanced settings =
 #TODO: Advanced options - what should be included?
@@ -203,6 +220,7 @@ secondLanguageBox = ctk.CTkComboBox(master=rightFrameAdvancedSettings,
                               values=["none","English", "Danish", "German", "French"])
 secondLanguageBox.pack(pady=5, side=TOP)
 
+#TODO: What should be written in info?
 
 # === Left frame ===
 leftTitel = ctk.CTkLabel(buttonFrame, text="OCRmyPDF")
@@ -213,11 +231,8 @@ btn1 = ctk.CTkButton(buttonFrame, text="OCRmyPDF", command=change_to_start)
 btn1.pack(side=TOP, pady=5)
 btn2 = ctk.CTkButton(buttonFrame, text="Advanced Settings", command=change_to_advancedSettings)
 btn2.pack(side=TOP, pady=5)
-btn3 = ctk.CTkButton(buttonFrame, text="Help", command=change_to_helppage)
+btn3 = ctk.CTkButton(buttonFrame, text="Info", command=change_to_helppage)
 btn3.pack(side=TOP, pady=5)
 
 startPage.pack(fill='both', expand=TRUE, side=RIGHT)
 win.mainloop()
-
-
-
