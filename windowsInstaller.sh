@@ -26,3 +26,16 @@ echo "Installing OCRmyPDF"
 pip install ocrmypdf
 
 echo "OCRmyPDF has now been installed on your computer"
+echo "Installing languages for OCRmyPDF"
+
+# Downloading languages:
+# Danish language
+curl -LJO https://raw.githubusercontent.com/tesseract-ocr/tessdata/main/dan.traineddata
+# German language
+curl -LJO https://raw.githubusercontent.com/tesseract-ocr/tessdata/main/deu.traineddata
+# French language
+curl -LJO https://raw.githubusercontent.com/tesseract-ocr/tessdata/main/fra.traineddata
+# Move langfiles to tessdata folder: 
+mv dan.traineddata C:\\Program Files\\Tesseract-OCR\\tessdata\\dan.traineddata
+mv deu.traineddata C:\\Program Files\\Tesseract-OCR\\tessdata\\deu.traineddata
+mv fra.traineddata C:\\Program Files\\Tesseract-OCR\\tessdata\\fra.traineddata
